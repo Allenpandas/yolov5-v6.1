@@ -148,7 +148,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
             p = Path(p)  # to Path
             save_path = str(save_dir / p.name)  # im.jpg
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # im.txt
-            s += '%gx%g ' % im.shape[2:]  # print string
+            # 获取图片的尺寸，如448×640
+            s += '%gx%g, ' % im.shape[2:]  # print string
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
             imc = im0.copy() if save_crop else im0  # for save_crop
             annotator = Annotator(im0, line_width=line_thickness, example=str(names))
@@ -159,6 +160,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                 # Print results
                 for c in det[:, -1].unique():
                     n = (det[:, -1] == c).sum()  # detections per class
+                    # 获取识别的结果
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
@@ -199,9 +201,12 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
                         save_path = str(Path(save_path).with_suffix('.mp4'))  # force *.mp4 suffix on results videos
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
-                    # 一帧一帧保存成图片，用毫秒级的时间来命名
-                    name = str(int(round(time.time() * 1000))) + '.jpg'
+                    # 获取当前毫秒级的时间戳
+                    current_time = int(round(time.time() * 1000))
+                    # 一帧一帧保存成图片，用时间戳命名
+                    name = str(current_time) + '.jpg'
                     cv2.imwrite(save_path + name, im0)
+                    s += f"{name}, "  # 记录保存后的文件名
                     # 一帧一帧的写入视频
                     vid_writer[i].write(im0)
 
