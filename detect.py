@@ -32,6 +32,7 @@ from pathlib import Path
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
+import time
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -181,25 +182,32 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                 cv2.imshow(str(p), im0)
                 cv2.waitKey(1)  # 1 millisecond
 
-            # Save results (image with detections)
+            # Save results (image with detections) | 保存检测结果
             if save_img:
                 if dataset.mode == 'image':
                     cv2.imwrite(save_path, im0)
-                else:  # 'video' or 'stream'
+                else:  # 'video' or 'stream' | 输入是视频video或者视频流stream（摄像头实时获取的流数据）
                     if vid_path[i] != save_path:  # new video
                         vid_path[i] = save_path
                         if isinstance(vid_writer[i], cv2.VideoWriter):
                             vid_writer[i].release()  # release previous video writer
-                        if vid_cap:  # video
+                        if vid_cap:  # video | 视频
                             fps = vid_cap.get(cv2.CAP_PROP_FPS)
                             w = int(vid_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
                             h = int(vid_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                        else:  # stream
+                        else:  # stream | 视频流
                             fps, w, h = 30, im0.shape[1], im0.shape[0]
                         save_path = str(Path(save_path).with_suffix('.mp4'))  # force *.mp4 suffix on results videos
                         vid_writer[i] = cv2.VideoWriter(save_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w, h))
+                    # 一帧一帧保存成图片，用毫秒级的时间来命名
+                    name = str(int(round(time.time() * 1000))) + '.jpg'
+                    cv2.imwrite(save_path + name, im0)
+                    # 一帧一帧的写入视频
                     vid_writer[i].write(im0)
 
+        # Print time (inference-only)
+        # 1.把日志写到一个文件，以.log结尾
+        # 2.替换"0: 384x640 Done. (0.272s)" 成 "01673354776906.jpg: 384x640 Done. (0.272s)"
         # Print time (inference-only)
         LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
 
@@ -215,32 +223,32 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5s.pt', help='model path(s)')
-    parser.add_argument('--source', type=str, default=ROOT / 'data/images', help='file/dir/URL/glob, 0 for webcam')
-    parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path')
+    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5x.pt', help='model path(s) | 预训练好的模型路径')
+    parser.add_argument('--source', type=str, default=ROOT / 'data/videos', help='file/dir/URL/glob, 0 for webcam | 测试数据来源，支持文件/目录/链接，0代表从设备摄像头获取')
+    parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path | 数据集配置文件')
+    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu | cuda的编号，默认使用cpu')
+    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --classes 0, or --classes 0 2 3 | 只检测指定分类')
+    parser.add_argument('--project', default=ROOT / 'runs/detect', help='save results to project/name | 检测结果存放的根目录')
+    parser.add_argument('--name', default='exp', help='save results to project/name | 本次检测结果存放的目录')
+    parser.add_argument('--line-thickness', default=5, type=int, help='bounding box thickness (pixels) | 标记框的厚度，默认3')
+    parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels | 隐藏标签')
+    parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences | 隐藏置信度')
+    parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference | 使用FP16半精度推理')
+    parser.add_argument('--dnn', action='store_true', help='use OpenCV DNN for ONNX inference | 使用OpenCV的DNN用于ONNX的推理')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[640], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detections per image')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--view-img', action='store_true', help='show results')
     parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
     parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
     parser.add_argument('--save-crop', action='store_true', help='save cropped prediction boxes')
     parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --classes 0, or --classes 0 2 3')
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
     parser.add_argument('--visualize', action='store_true', help='visualize features')
     parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--project', default=ROOT / 'runs/detect', help='save results to project/name')
-    parser.add_argument('--name', default='exp', help='save results to project/name')
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--line-thickness', default=3, type=int, help='bounding box thickness (pixels)')
-    parser.add_argument('--hide-labels', default=False, action='store_true', help='hide labels')
-    parser.add_argument('--hide-conf', default=False, action='store_true', help='hide confidences')
-    parser.add_argument('--half', action='store_true', help='use FP16 half-precision inference')
-    parser.add_argument('--dnn', action='store_true', help='use OpenCV DNN for ONNX inference')
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     print_args(FILE.stem, opt)
