@@ -99,7 +99,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
     if pt or jit:
         model.model.half() if half else model.model.float()
 
-    # Dataloader
+    # Dataloader | 数据集读取
     if webcam:
         view_img = check_imshow()
         cudnn.benchmark = True  # set True to speed up constant image size inference
@@ -205,7 +205,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                     current_time = int(round(time.time() * 1000))
                     # 一帧一帧保存成图片，用时间戳命名
                     name = str(current_time) + '.jpg'
-                    cv2.imwrite(save_path + name, im0)
+                    pic_save_path = save_path[0:save_path.rindex("/")+1]
+                    cv2.imwrite(pic_save_path + name, im0)
                     s += f"{name}, "  # 记录保存后的文件名
                     # 一帧一帧的写入视频
                     vid_writer[i].write(im0)
@@ -214,7 +215,8 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
         # 1.把日志写到一个文件，以.log结尾
         # 2.替换"0: 384x640 Done. (0.272s)" 成 "01673354776906.jpg: 384x640 Done. (0.272s)"
         # Print time (inference-only)
-        LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
+        # LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
+        LOGGER.info(f'{s}{t3 - t2:.3f}s, Done.')
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
@@ -228,7 +230,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 
 def parse_opt():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5x.pt', help='model path(s) | 预训练好的模型路径')
+    parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5x6.pt', help='model path(s) | 预训练好的模型路径')
     parser.add_argument('--source', type=str, default=ROOT / 'data/videos', help='file/dir/URL/glob, 0 for webcam | 测试数据来源，支持文件/目录/链接，0代表从设备摄像头获取')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path | 数据集配置文件')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu | cuda的编号，默认使用cpu')
