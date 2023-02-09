@@ -185,6 +185,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                 cv2.waitKey(1)  # 1 millisecond
 
             # Save results (image with detections) | 保存检测结果
+            result_log = open(str(save_dir) + "/result.log", 'a+')  # 日志目录
             if save_img:
                 if dataset.mode == 'image':
                     cv2.imwrite(save_path, im0)
@@ -205,18 +206,19 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                     current_time = int(round(time.time() * 1000))
                     # 一帧一帧保存成图片，用时间戳命名
                     name = str(current_time) + '.jpg'
-                    pic_save_path = save_path[0:save_path.rindex("/")+1]
-                    cv2.imwrite(pic_save_path + name, im0)
+                    video2pic_save_path = save_path[0:save_path.rindex("/")+1]
+                    cv2.imwrite(str(save_dir) + "/" + name, im0)
                     s += f"{name}, "  # 记录保存后的文件名
                     # 一帧一帧的写入视频
                     vid_writer[i].write(im0)
+        # 计算推理时间
+        s += f"{t3 - t2:.3f}s, Done."
+        LOGGER.info(f'{s}')
 
-        # Print time (inference-only)
-        # 1.把日志写到一个文件，以.log结尾
-        # 2.替换"0: 384x640 Done. (0.272s)" 成 "01673354776906.jpg: 384x640 Done. (0.272s)"
-        # Print time (inference-only)
-        # LOGGER.info(f'{s}Done. ({t3 - t2:.3f}s)')
-        LOGGER.info(f'{s}{t3 - t2:.3f}s, Done.')
+        result_log.write(f'{s} \n')
+
+    # 关闭日志文件
+    result_log.close()
 
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
