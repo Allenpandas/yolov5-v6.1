@@ -234,7 +234,7 @@ def parse_opt():
     parser.add_argument('--source', type=str, default=ROOT / 'data/videos', help='file/dir/URL/glob, 0 for webcam | 测试数据来源，支持文件/目录/链接，0代表从设备摄像头获取')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path | 数据集配置文件')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu | cuda的编号，默认使用cpu')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --classes 0, or --classes 0 2 3 | 只检测指定分类')
+    parser.add_argument('--classes', nargs='+', default=0, type=int, help='filter by class: --classes 0, or --classes 0 2 3 | 只检测指定分类')
     parser.add_argument('--project', default=ROOT / 'runs/detect', help='save results to project/name | 检测结果存放的根目录')
     parser.add_argument('--name', default='exp', help='save results to project/name | 本次检测结果存放的目录')
     parser.add_argument('--line-thickness', default=5, type=int, help='bounding box thickness (pixels) | 标记框的厚度，默认3')
