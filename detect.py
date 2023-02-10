@@ -208,7 +208,6 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
                         current_time = int(round(time.time() * 1000))
                         # 一帧一帧保存成图片，用时间戳命名
                         name = str(current_time) + '.jpg'
-                        video2pic_save_path = save_path[0:save_path.rindex("/")+1]
                         cv2.imwrite(str(save_dir) + "/" + name, im0)
                         s += f"{name}, "  # 记录保存后的文件名
                         # 一帧一帧的写入视频
