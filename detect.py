@@ -230,7 +230,7 @@ def run(weights=ROOT / 'yolov5s.pt',  # model.pt path(s)
 def parse_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default=ROOT / 'yolov5x6.pt', help='model path(s) | 预训练好的模型路径')
-    parser.add_argument('--source', type=str, default=ROOT / 'data/videos', help='file/dir/URL/glob, 0 for webcam | 测试数据来源，支持文件/目录/链接，0代表从设备摄像头获取')
+    parser.add_argument('--source', type=str, default=ROOT / 'datasets/persons', help='file/dir/URL/glob, 0 for webcam | 测试数据来源，支持文件/目录/链接，0代表从设备摄像头获取')
     parser.add_argument('--data', type=str, default=ROOT / 'data/coco128.yaml', help='(optional) dataset.yaml path | 数据集配置文件')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu | cuda的编号，默认使用cpu')
     parser.add_argument('--classes', nargs='+', default=0, type=int, help='filter by class: --classes 0, or --classes 0 2 3 | 只检测指定分类')
