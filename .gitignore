@@ -23,6 +23,7 @@
 !setup.cfg
 !cfg/yolov3*.cfg
 !*/.gitkeep
+!datasets/
 
 storage.googleapis.com
 runs/*
