@@ -1,5 +1,5 @@
-# YOLOv5-v6.1
-YOLOv5🚀是一个在COCO数据集上预训练的目标检测模型，代表了<a href="https://ultralytics.com">Ultralytics公司</a>对未来视觉AI方法的开源研究，该模型结合了在数千小时的研究和开发中吸取的经验教训和最佳实践，目前被广泛应用于计算机视觉领域。本仓库在原有YOLOV5（版本为v6.1）的基础上进行修改，用于面向智能座舱场景下的目标检测（如：乘员数量检测、贵重物品遗留检测、安全带检测等）。
+# YOLOv5-v6.1-Object-Detection
+YOLOv5🚀是一个在COCO数据集上预训练的目标检测模型，代表了 <a href="https://ultralytics.com">Ultralytics公司</a> 对未来视觉AI方法的开源研究，该模型结合了在数千小时的研究和开发中吸取的经验教训和最佳实践，目前被广泛应用于计算机视觉领域。本仓库在原有YOLOV5（版本为v6.1）的基础上进行修改，用于面向智能座舱场景下的目标检测（如：乘员数量检测、贵重物品遗留检测、安全带检测等）。
 
 
 ## YOLOv5教程
@@ -18,8 +18,8 @@ YOLOv5🚀是一个在COCO数据集上预训练的目标检测模型，代表了
 **安装步骤：** 克隆仓库、安装requirements.txt中的依赖库（建议使用Anaconda部署环境）。
 
 ```shell
-git clone https://github.com/Allenpandas/yolov5-v6.1.git  # clone
-cd yolov5-v6.1
+git clone https://github.com/Allenpandas/YOLOv5-v6.1-Object-Detection.git  # clone
+cd YOLOv5-v6.1-Object-Detection
 pip install -r requirements.txt  # install
 ```
 
